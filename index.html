@@ -1,3 +1,41 @@
-Hello World!
+<!DOCTYPE html>
 
-<a href="test.html">test</a>
+<script type="module">
+    import { h, render } from 'https://esm.sh/preact';
+    import htm from 'https://esm.sh/htm';
+
+    const html = htm.bind(h);
+    const link = "pastel.html";
+
+    function Hello(props) {
+        return html`
+        <h1>This is a bad landing page!</h1>
+        <h3>
+            Please just look away... <br />
+            The link down there seems promising, though.
+        </h3>
+        `;
+    }
+
+    function Center(props) {
+        return html`
+        <div style="display: flex; align-items: center; justify-content: center;">
+        <div>
+            ${props.content}
+        </div>
+        </div>
+        `;
+    }
+
+    function Main(props) {
+        return html`
+        <${Center} content=${html`
+            <${Hello} />
+            <a href="${link}">look, a link!</a>
+        `}
+        />
+        `;
+    }
+
+    render(html`<${Main}/>`, document.body);
+</script>
