@@ -1,1 +1,188 @@
-test
+<!DOCTYPE html>
+<script type="module">
+    import { h, render } from 'https://esm.sh/preact';
+    import htm from 'https://esm.sh/htm';
+
+    const html = htm.bind(h);
+
+    function div(content, {style} = {}) {
+        return html`<div style=${style}> ${content} </div>`
+    }
+
+    const br = html`<br />`;
+
+    function p(content, {style} = {}) {
+        return html`<p style=${style}> ${content} </p>`;
+    }
+
+    function h1(content, {style} = {}) {
+        return html`<h1 style=${style}> ${content} </h1>`;
+    }
+
+    function h2(content, {style} = {}) {
+        return html`<h2 style=${style}> ${content} </h2>`;
+    }
+
+    function h3(content, {style} = {}) {
+        return html`<h3 style=${style}> ${content} </h3>`;
+    }
+
+    function hspc(amount) {
+        return html`<span style="display: inline-block; width: ${amount}em;" />`;
+    }
+
+    function two_cols(fracs, content, {style} = {}) {
+        return TwoCols({
+            frac_left: fracs.left,
+            frac_right: fracs.right,
+            left: content.left,
+            right: content.right,
+            style: style,
+        });
+    }
+
+    function TwoCols({
+        frac_left, 
+        frac_right, 
+        left, right, 
+        style
+    }) {
+        return html`
+        <div style="
+            display: grid;
+            grid-template-columns: ${frac_left}fr ${frac_right}fr;
+            ${style}
+        ">
+            ${left}
+            ${right}
+        </div>
+        `;
+    }
+
+    function full_img(src, {style} = {}) {
+        return FullIMG({src: src, style: style});
+    }
+
+    function FullIMG({src, style}) {
+        return html`
+            <img src=${src}
+                style="
+                    max-width: 100%;
+                    max-height: 100%;
+                    width: auto;
+                    height: auto;
+                    ${style}
+                " 
+            />`;
+    }
+
+    function pad(pad, content, {style} = {}) {
+        return Pad({pad: pad, content: content, style: style});
+    }
+
+    function Pad({pad, content, style}) {
+        return div(
+            content,
+            {style: `
+                height: ${100 - (pad[0] ?? 0) - (pad[2] ?? 0)}%;
+                width: ${100 - (pad[1] ?? 0) - (pad[3] ?? 0)}%;
+                padding: ${pad[0]}% ${pad[1]}% ${pad[2]}% ${pad[3]}%;
+                ${style}
+            `}
+        );
+    }
+
+    function inset(inset, content, {style} = {}) {
+        let padding = [inset/2, inset/2, inset/2, inset/2];
+        return Pad({pad: padding, content: content, style: style});
+    }
+
+    function center_vert(content, {style} = {}) {
+        return CenterVert({content: content, style: style});
+    }
+
+    function CenterVert({content, style}) {
+        return div(
+            div(content, {}),
+            {style: `
+                display: grid;
+                grid-template-columns: 1fr;
+                align-items: center;
+                height: 100%;
+                width: 100%;
+                ${style}
+            `}
+        );
+    }
+
+    function Page1(props) {
+        return two_cols(
+            {left: 80, right: 120},
+            {left: div(
+                inset(10,
+                    full_img(
+                        "ganne-steh-short.png",
+                        {style: "float: right;"},
+                    )),
+                {style: "height: 100svh; width: 95%; padding-right: 5%;"}
+            ),
+            right: inset(2,
+                center_vert(
+                    [ h1("THE aketon", {style: "margin: 5% 0 0 0;"}),
+                    , h3("ARTISINAL WORKS", {style: "margin: 0;"}),
+                    , p([ "Introducing the first of a kind."
+                        , br
+                        , "Masterfully handcrafted for your enjoyment."
+                        ])
+                ])
+            )},
+            {style: `
+                width: 100svw;
+                height: 100svh;
+            `}
+        );
+    }
+
+    function Page2(props) {
+        return two_cols(
+            {left: 1, right: 1},
+            {left: pad([10, 0, 0, 10],
+                [ h2("Tastefully Ornate".toUpperCase(), {style: "margin-bottom: 0;"})
+                , p([ hspc(1)
+                    , "Aketon: Jacket worn on top of armour as adornment."
+                    ], {style: "margin: 0 0 10% 0;"})
+                , p(["With attention to detail, embellished by 〈写意〉:", br
+                    , "the aketon presents itself with a hand-crafted porcelain coat.", br
+                    , br
+                    , "Embodying the ideals of the owner;", br
+                    , "The aketon wears sophisticated brushstrokes, forming landscapes of majestic mountains and earthly life."
+                    ])
+                ]
+            ),
+            right: pad([5, 0, 0, 0], full_img("ganne-wenig-short.png"))},
+            {style: `
+                width: 100svw;
+                height: 100svh;
+            `}
+        );
+    }
+
+    function Page3(props) {}
+
+    function Main(props) {
+        return div(
+            [Page1(), Page2(), Page3()],
+            {style: "font-size: 2.2vw;"}
+        );
+    }
+
+    render(html`<${Main} />`, document.body);
+</script>
+
+<html>
+<head>
+    <link rel="stylesheet" href="pastel.css">
+</head>
+
+<body></body>
+</html>
