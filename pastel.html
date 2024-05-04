@@ -7,6 +7,27 @@
 
     const timer_end = new Date("Jun 6, 6666 06:06:06").getTime();
 
+    class Timer extends Component {
+        state = { time: Date.now() };
+        componentDidMount() {
+            this.timer = setInterval(() => {
+                this.setState({ time: Date.now() });
+            }, 1000);
+        }
+        componentWillUnmount() {
+            clearInterval(this.timer);
+        }
+        render() {
+            var distance = timer_end - new Date(this.state.time);
+            var years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365))
+            var days = Math.floor((distance % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            return html`<span>${years}y ${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
+        }
+    }
+
     function div(content, {style} = {}) {
         return html`<div style=${style}> ${content} </div>`
     }
@@ -150,7 +171,7 @@
     function Page2(props) {
         return two_cols(
             {left: 1, right: 1},
-            {left: pad([10, 0, 0, 10],
+            {left: pad([7, 0, 0, 10],
                 [ h2("Tastefully Ornate", {style: "margin-bottom: 0;"})
                 , p([ hspc(1)
                     , "Aketon: Jacket worn on top of armour as adornment."
@@ -163,7 +184,7 @@
                     ])
                 ]
             ),
-            right: pad([5, 0, 0, 0], full_img("ganne-wenig-short.png"))},
+            right: pad([3, 0, 0, 0], full_img("ganne-wenig-short.png", {style: "max-height: 80% !important;"}))},
             {style: `
                 width: 100lvw;
                 height: 100lvh;
@@ -215,7 +236,7 @@
         return div(
             center_vert(
             [ h2("ETA", {style: "margin: 0;"})
-            , html`<div id="timer" />`
+            , html`<${Timer} />`
             , html`<a href="ps.html" style="color: black;"> unsichtbarer link lol! </a>`
             ]),
             {style: `
@@ -228,35 +249,33 @@
     }
 
     function Main(props) {
-        return div(
-            [Page1(), Page2(), Page3(), Page4(), Page5()],
-            {style: "font-size: 2.2vw;"}
-        );
+        if (screen.orientation.type.startsWith("portrait")) {
+            return html`<h1>PLEASE ROTATE SCREEN!</h1>`;
+        } else {
+            return div(
+                [ Page1(), Page2(), Page3(), Page4(), Page5()],
+                {style: "font-size: 2.2vw;"}
+            );
+        }
     }
+
+    //screen.addEventListener("orientationchange", () => {
+    //    if (screen.orientation.type.startsWith("portrait")) {
+    //        render(html`<h1>PLEASE ROTATE SCREEN!</h1>`, document.body);
+    //    } else {
+    //        render(html`<${Main} />`, document.body);
+    //        render(html`<${Timer} />`, document.getElementById("timer"))
+    //    }
+    //});
 
     render(html`<${Main} />`, document.body);
 
-    class Timer extends Component {
-        state = { time: Date.now() };
-        componentDidMount() {
-            this.timer = setInterval(() => {
-                this.setState({ time: Date.now() });
-            }, 1000);
-        }
-        componentWillUnmount() {
-            clearInterval(this.timer);
-        }
-        render() {
-            var distance = timer_end - new Date(this.state.time);
-            var years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365))
-            var days = Math.floor((distance % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
-            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            return html`<span>${years}y ${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
-        }
-    }
-    render(html`<${Timer} />`, document.getElementById("timer"))
+    //if (screen.orientation.type.startsWith("portrait")) {
+    //    render(html`<h1>PLEASE ROTATE SCREEN!</h1>`, document.body);
+    //} else {
+    //    render(html`<${Main} />`, document.body);
+    //    render(html`<${Timer} />`, document.getElementById("timer"))
+    //}
 </script>
 
 <html>
