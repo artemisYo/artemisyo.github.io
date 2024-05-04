@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <script type="module">
-    import { h, render } from 'https://esm.sh/preact';
+    import { h, render, Component } from 'https://esm.sh/preact';
     import htm from 'https://esm.sh/htm';
 
     const html = htm.bind(h);
+
+    const timer_end = new Date("Jun 6, 6666 06:06:06").getTime();
 
     function div(content, {style} = {}) {
         return html`<div style=${style}> ${content} </div>`
@@ -60,20 +62,22 @@
     }
 
     function full_img(src, {style} = {}) {
-        return FullIMG({src: src, style: style});
+        return img(src, 
+            {style: `
+                max-width: 100%;
+                max-height: 100%;
+                width: auto;
+                height: auto;
+                ${style}
+            `});
     }
 
-    function FullIMG({src, style}) {
-        return html`
-            <img src=${src}
-                style="
-                    max-width: 100%;
-                    max-height: 100%;
-                    width: auto;
-                    height: auto;
-                    ${style}
-                " 
-            />`;
+    function img(src, {style} = {}) {
+        return IMG({src: src, style: style});
+    }
+
+    function IMG({src, style}) {
+        return html`<img src=${src} style=${style} />`;
     }
 
     function pad(pad, content, {style} = {}) {
@@ -129,7 +133,7 @@
             right: inset(2,
                 center_vert(
                     [ h1("THE aketon", {style: "margin: 5% 0 0 0;"}),
-                    , h3("ARTISINAL WORKS", {style: "margin: 0;"}),
+                    , h3([ html`<em>ART</em>`, "isinal works"], {style: "margin: 0;"}),
                     , p([ "Introducing the first of a kind."
                         , br
                         , "Masterfully handcrafted for your enjoyment."
@@ -147,12 +151,12 @@
         return two_cols(
             {left: 1, right: 1},
             {left: pad([10, 0, 0, 10],
-                [ h2("Tastefully Ornate".toUpperCase(), {style: "margin-bottom: 0;"})
+                [ h2("Tastefully Ornate", {style: "margin-bottom: 0;"})
                 , p([ hspc(1)
                     , "Aketon: Jacket worn on top of armour as adornment."
                     ], {style: "margin: 0 0 10% 0;"})
-                , p(["With attention to detail, embellished by 〈写意〉:", br
-                    , "the aketon presents itself with a hand-crafted porcelain coat.", br
+                , p([ "With attention to detail, embellished by 〈写意〉;", br
+                    , "The aketon presents itself with a hand-crafted porcelain coat.", br
                     , br
                     , "Embodying the ideals of the owner;", br
                     , "The aketon wears sophisticated brushstrokes, forming landscapes of majestic mountains and earthly life."
@@ -163,20 +167,96 @@
             {style: `
                 width: 100svw;
                 height: 100svh;
+                overflow: hidden;
             `}
         );
     }
 
-    function Page3(props) {}
+    function Page3(props) {
+        return div(
+            [ p([ h2("Fully Functional", {style: "margin-bottom: 0;"})
+                , "Championing"
+                , html`<ul style="margin: 0;">
+                        <li>a heat-insulating vacuum layer</li>
+                        <li>a heat-reflective specular layer</li>
+                        <li>a heat-obstructive porcelain layer</li>
+                    </ul>`
+                , "Achieving a dissipation rate of 0.5°C per hour"
+                , html`<a href="#not-tested">*</a>;`, br
+                , "Keeping your tea hot throughout the entire day.", br
+                , html`<span id="not-tested" style="font-size: 0.5em;">*This was not actually tested lol</span>`
+                ]) 
+            ],
+            {style: `
+                display: grid;
+                justify-content: center; 
+                height: 100svh; 
+                width: 100svw;
+            `}
+        );
+    }
+
+    function Page4(props) {
+        return div(
+            [ div()
+            , img("ganne-was-short.png", {style: "width: 100%;"})
+            , div()
+            ],
+            {style: `
+                display: grid;
+                grid-template-columns: 23fr 150fr 25fr;
+                height: 100svh; 
+                width: 100svw;
+            `}
+        );
+    }
+
+    function Page5(props) {
+        return div(
+            center_vert(
+            [ h2("ETA", {style: "margin: 0;"})
+            , html`<div id="timer" />`
+            , html`<a href="ps.html" style="color: black;"> unsichtbarer link lol! </a>`
+            ]),
+            {style: `
+                text-align: center;
+                height: 100svh; 
+                width: 100svw;
+                font-size: 4vw;
+            `}    
+        );
+    }
 
     function Main(props) {
         return div(
-            [Page1(), Page2(), Page3()],
+            [Page1(), Page2(), Page3(), Page4(), Page5()],
             {style: "font-size: 2.2vw;"}
         );
     }
 
     render(html`<${Main} />`, document.body);
+
+    class Timer extends Component {
+        state = { time: Date.now() };
+        componentDidMount() {
+            this.timer = setInterval(() => {
+                this.setState({ time: Date.now() });
+            }, 1000);
+        }
+        componentWillUnmount() {
+            clearInterval(this.timer);
+        }
+        render() {
+            var distance = timer_end - new Date(this.state.time);
+            var years = Math.floor(distance / (1000 * 60 * 60 * 24 * 365))
+            var days = Math.floor((distance % (1000 * 60 * 60 * 24 * 365)) / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            return html`<span>${years}y ${days}d ${hours}h ${minutes}m ${seconds}s</span>`;
+        }
+    }
+    render(html`<${Timer} />`, document.getElementById("timer"))
 </script>
 
 <html>
